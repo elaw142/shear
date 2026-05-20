@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -105,7 +97,7 @@ namespace
     }
 }
 
-ForgeLookAndFeel::ForgeLookAndFeel()
+ShearLookAndFeel::ShearLookAndFeel()
 {
     setColour (juce::Slider::thumbColourId, ember());
     setColour (juce::Slider::textBoxTextColourId, text());
@@ -122,7 +114,7 @@ ForgeLookAndFeel::ForgeLookAndFeel()
     setColour (juce::Label::textColourId, text());
 }
 
-void ForgeLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height,
+void ShearLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height,
                                          float sliderPosProportional, float rotaryStartAngle,
                                          float rotaryEndAngle, juce::Slider& slider)
 {
@@ -180,7 +172,7 @@ void ForgeLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int wi
     }
 }
 
-void ForgeLookAndFeel::drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
+void ShearLookAndFeel::drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
                                          bool shouldDrawButtonAsHighlighted,
                                          bool shouldDrawButtonAsDown)
 {
@@ -210,7 +202,7 @@ void ForgeLookAndFeel::drawToggleButton (juce::Graphics& g, juce::ToggleButton& 
                       juce::Justification::centred, 1);
 }
 
-void ForgeLookAndFeel::drawComboBox (juce::Graphics& g, int width, int height, bool isButtonDown,
+void ShearLookAndFeel::drawComboBox (juce::Graphics& g, int width, int height, bool isButtonDown,
                                      int buttonX, int buttonY, int buttonW, int buttonH,
                                      juce::ComboBox& box)
 {
@@ -230,13 +222,13 @@ void ForgeLookAndFeel::drawComboBox (juce::Graphics& g, int width, int height, b
     g.fillPath (arrow);
 }
 
-juce::Font ForgeLookAndFeel::getLabelFont (juce::Label& label)
+juce::Font ShearLookAndFeel::getLabelFont (juce::Label& label)
 {
     juce::ignoreUnused (label);
     return juce::Font (juce::FontOptions (12.5f, juce::Font::bold));
 }
 
-TransferCurveDisplay::TransferCurveDisplay (NewProjectAudioProcessor& processor)
+TransferCurveDisplay::TransferCurveDisplay (ShearAudioProcessor& processor)
     : audioProcessor (processor)
 {
 }
@@ -420,10 +412,10 @@ void LevelMeter::paint (juce::Graphics& g)
 }
 
 //==============================================================================
-NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioProcessor& p)
+ShearAudioProcessorEditor::ShearAudioProcessorEditor (ShearAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    setLookAndFeel (&forgeLookAndFeel);
+    setLookAndFeel (&shearLookAndFeel);
 
     configureKnob (inputSlider, inputLabel, "INPUT");
     configureKnob (driveSlider, driveLabel, "DRIVE", true);
@@ -460,14 +452,14 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
     startTimerHz (30);
 }
 
-NewProjectAudioProcessorEditor::~NewProjectAudioProcessorEditor()
+ShearAudioProcessorEditor::~ShearAudioProcessorEditor()
 {
     stopTimer();
     setLookAndFeel (nullptr);
 }
 
 //==============================================================================
-void NewProjectAudioProcessorEditor::paint (juce::Graphics& g)
+void ShearAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (ink());
 
@@ -501,7 +493,7 @@ void NewProjectAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawHorizontalLine (98, 40.0f, static_cast<float> (getWidth() - 40));
 }
 
-void NewProjectAudioProcessorEditor::resized()
+void ShearAudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds().reduced (36, 28);
     auto header = bounds.removeFromTop (74);
@@ -531,14 +523,14 @@ void NewProjectAudioProcessorEditor::resized()
     layoutKnob (outputSlider, outputLabel, strip.reduced (8));
 }
 
-void NewProjectAudioProcessorEditor::timerCallback()
+void ShearAudioProcessorEditor::timerCallback()
 {
     inputMeter.setLevel (audioProcessor.getInputLevel());
     outputMeter.setLevel (audioProcessor.getOutputLevel());
     curveDisplay.repaint();
 }
 
-void NewProjectAudioProcessorEditor::configureKnob (juce::Slider& slider, juce::Label& label,
+void ShearAudioProcessorEditor::configureKnob (juce::Slider& slider, juce::Label& label,
                                                     const juce::String& labelText, bool primary)
 {
     slider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
@@ -571,7 +563,7 @@ void NewProjectAudioProcessorEditor::configureKnob (juce::Slider& slider, juce::
     addAndMakeVisible (label);
 }
 
-void NewProjectAudioProcessorEditor::layoutKnob (juce::Slider& slider, juce::Label& label,
+void ShearAudioProcessorEditor::layoutKnob (juce::Slider& slider, juce::Label& label,
                                                  juce::Rectangle<int> area, bool primary)
 {
     label.setBounds (area.removeFromTop (primary ? 30 : 26));

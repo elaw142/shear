@@ -2,10 +2,10 @@
 
 <Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="NewProject\Source">
+    <Filter Include="Shear\Source">
       <UniqueIdentifier>{CBA2DCCD-1D2C-5CB2-5048-C7D8353D0443}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NewProject">
+    <Filter Include="Shear">
       <UniqueIdentifier>{CB74BE48-DB7F-3C97-627C-DABC57896C4C}</UniqueIdentifier>
     </Filter>
     <Filter Include="JUCE Modules\juce_audio_basics\audio_play_head">
@@ -680,10 +680,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\PluginProcessor.cpp">
-      <Filter>NewProject\Source</Filter>
+      <Filter>Shear\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\PluginEditor.cpp">
-      <Filter>NewProject\Source</Filter>
+      <Filter>Shear\Source</Filter>
     </ClCompile>
     <ClCompile Include="D:\Programs\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.cpp">
       <Filter>JUCE Modules\juce_audio_basics\audio_play_head</Filter>
@@ -3643,10 +3643,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\PluginProcessor.h">
-      <Filter>NewProject\Source</Filter>
+      <Filter>Shear\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\PluginEditor.h">
-      <Filter>NewProject\Source</Filter>
+      <Filter>Shear\Source</Filter>
     </ClInclude>
     <ClInclude Include="D:\Programs\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">
       <Filter>JUCE Modules\juce_audio_basics\audio_play_head</Filter>

@@ -94,14 +94,14 @@
       <ProgramDatabaseFile>$(IntDir)\Shear.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <AdditionalDependencies>NewProject.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shear.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)\Shear.bsc</OutputFile>
     </Bscmake>
     <Lib>
-      <AdditionalDependencies>NewProject.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shear.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,14 +143,14 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LargeAddressAware>true</LargeAddressAware>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>NewProject.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shear.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)\Shear.bsc</OutputFile>
     </Bscmake>
     <Lib>
-      <AdditionalDependencies>NewProject.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shear.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -1,20 +1,12 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-class ForgeLookAndFeel : public juce::LookAndFeel_V4
+class ShearLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
-    ForgeLookAndFeel();
+    ShearLookAndFeel();
 
     void drawRotarySlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPosProportional, float rotaryStartAngle,
@@ -34,7 +26,7 @@ public:
 class TransferCurveDisplay : public juce::Component
 {
 public:
-    explicit TransferCurveDisplay (NewProjectAudioProcessor&);
+    explicit TransferCurveDisplay (ShearAudioProcessor&);
 
     void paint (juce::Graphics&) override;
 
@@ -43,7 +35,7 @@ private:
     juce::String getModeName (int mode) const;
     float shapeSample (float input, int mode, float bias) const noexcept;
 
-    NewProjectAudioProcessor& audioProcessor;
+    ShearAudioProcessor& audioProcessor;
 };
 
 class LevelMeter : public juce::Component
@@ -59,15 +51,12 @@ private:
     float level = 0.0f;
 };
 
-//==============================================================================
-/**
-*/
-class NewProjectAudioProcessorEditor  : public juce::AudioProcessorEditor,
+class ShearAudioProcessorEditor  : public juce::AudioProcessorEditor,
                                         private juce::Timer
 {
 public:
-    NewProjectAudioProcessorEditor (NewProjectAudioProcessor&);
-    ~NewProjectAudioProcessorEditor() override;
+    ShearAudioProcessorEditor (ShearAudioProcessor&);
+    ~ShearAudioProcessorEditor() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -82,11 +71,9 @@ private:
     void configureKnob (juce::Slider&, juce::Label&, const juce::String& labelText, bool primary = false);
     void layoutKnob (juce::Slider&, juce::Label&, juce::Rectangle<int>, bool primary = false);
 
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    NewProjectAudioProcessor& audioProcessor;
+    ShearAudioProcessor& audioProcessor;
 
-    ForgeLookAndFeel forgeLookAndFeel;
+    ShearLookAndFeel shearLookAndFeel;
     juce::TooltipWindow tooltipWindow;
 
     juce::Slider inputSlider;
@@ -119,5 +106,5 @@ private:
     std::unique_ptr<ComboBoxAttachment> modeAttachment;
     std::unique_ptr<ButtonAttachment> hqAttachment;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NewProjectAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ShearAudioProcessorEditor)
 };

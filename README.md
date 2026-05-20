@@ -28,7 +28,7 @@ C:\Program Files\Common Files\VST3
 
 Then open FL Studio and rescan plugins.
 
-If you previously installed an older build under `SkeuoDrive.vst3` or `Emberfold.vst3`, remove those old bundles from the VST3 folder before rescanning so the host does not cache duplicate plugin entries.
+If you previously installed an older local prototype of this plugin, remove that old VST3 bundle before rescanning so the host does not cache duplicate plugin entries.
 
 ## Build From Source
 
@@ -36,7 +36,7 @@ Requirements:
 
 - Windows x64.
 - Visual Studio 2022 with the Desktop development with C++ workload.
-- JUCE 8.x modules available at the path configured in `NewProject.jucer` and the generated Visual Studio project files.
+- JUCE 8.x modules available at the path configured in `Shear.jucer` and the generated Visual Studio project files.
 
 The current generated project expects JUCE modules at:
 
@@ -47,7 +47,7 @@ D:\Programs\JUCE\modules
 To build the VST3 from PowerShell:
 
 ```powershell
-& 'C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\amd64\MSBuild.exe' 'Builds\VisualStudio2026\NewProject.sln' /t:"NewProject - VST3" /p:Configuration=Release /p:Platform=x64 /m
+& 'C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\amd64\MSBuild.exe' 'Builds\VisualStudio2026\Shear.sln' /t:"Shear - VST3" /p:Configuration=Release /p:Platform=x64 /m
 ```
 
 The built VST3 appears at:
@@ -64,7 +64,7 @@ Source/
   PluginEditor.*      Custom JUCE UI and controls
 JuceLibraryCode/      Projucer-generated JUCE include wrappers
 Builds/               Generated Visual Studio project files
-NewProject.jucer      JUCE project definition
+Shear.jucer           JUCE project definition
 ```
 
 ## Release Notes

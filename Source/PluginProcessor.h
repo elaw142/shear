@@ -1,25 +1,14 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
 #include <array>
 
-//==============================================================================
-/**
-*/
-class NewProjectAudioProcessor  : public juce::AudioProcessor
+class ShearAudioProcessor  : public juce::AudioProcessor
 {
 public:
     //==============================================================================
-    NewProjectAudioProcessor();
-    ~NewProjectAudioProcessor() override;
+    ShearAudioProcessor();
+    ~ShearAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -91,5 +80,5 @@ private:
     std::atomic<float> inputLevel { 0.0f };
     std::atomic<float> outputLevel { 0.0f };
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NewProjectAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ShearAudioProcessor)
 };

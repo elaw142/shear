@@ -1,16 +1,8 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
 //==============================================================================
-NewProjectAudioProcessor::NewProjectAudioProcessor()
+ShearAudioProcessor::ShearAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -27,17 +19,17 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
 {
 }
 
-NewProjectAudioProcessor::~NewProjectAudioProcessor()
+ShearAudioProcessor::~ShearAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String NewProjectAudioProcessor::getName() const
+const juce::String ShearAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool NewProjectAudioProcessor::acceptsMidi() const
+bool ShearAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -46,7 +38,7 @@ bool NewProjectAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool NewProjectAudioProcessor::producesMidi() const
+bool ShearAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -55,7 +47,7 @@ bool NewProjectAudioProcessor::producesMidi() const
    #endif
 }
 
-bool NewProjectAudioProcessor::isMidiEffect() const
+bool ShearAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -64,40 +56,40 @@ bool NewProjectAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double NewProjectAudioProcessor::getTailLengthSeconds() const
+double ShearAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int NewProjectAudioProcessor::getNumPrograms()
+int ShearAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int NewProjectAudioProcessor::getCurrentProgram()
+int ShearAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void NewProjectAudioProcessor::setCurrentProgram (int index)
+void ShearAudioProcessor::setCurrentProgram (int index)
 {
     juce::ignoreUnused (index);
 }
 
-const juce::String NewProjectAudioProcessor::getProgramName (int index)
+const juce::String ShearAudioProcessor::getProgramName (int index)
 {
     juce::ignoreUnused (index);
     return {};
 }
 
-void NewProjectAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void ShearAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
     juce::ignoreUnused (index, newName);
 }
 
 //==============================================================================
-void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void ShearAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     juce::ignoreUnused (samplesPerBlock);
 
@@ -122,21 +114,21 @@ void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     outputGainSmoothed.setCurrentAndTargetValue (outputGainSmoothed.getTargetValue());
 }
 
-void NewProjectAudioProcessor::releaseResources()
+void ShearAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool NewProjectAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool ShearAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
     return true;
   #else
     // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
+    // Shear keeps channel layouts simple for broad DAW compatibility.
     // Some plugin hosts, such as certain GarageBand versions, will only
     // load plugins that support stereo bus layouts.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
@@ -154,19 +146,13 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 }
 #endif
 
-void NewProjectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void ShearAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ignoreUnused (midiMessages);
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
@@ -236,25 +222,25 @@ void NewProjectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 }
 
 //==============================================================================
-bool NewProjectAudioProcessor::hasEditor() const
+bool ShearAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* NewProjectAudioProcessor::createEditor()
+juce::AudioProcessorEditor* ShearAudioProcessor::createEditor()
 {
-    return new NewProjectAudioProcessorEditor (*this);
+    return new ShearAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void NewProjectAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void ShearAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = parameters.copyState();
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
     copyXmlToBinary (*xml, destData);
 }
 
-void NewProjectAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void ShearAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
@@ -262,7 +248,7 @@ void NewProjectAudioProcessor::setStateInformation (const void* data, int sizeIn
         parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
 }
 
-juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::createParameterLayout()
+juce::AudioProcessorValueTreeState::ParameterLayout ShearAudioProcessor::createParameterLayout()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
 
@@ -292,7 +278,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout NewProjectAudioProcessor::cr
     return { params.begin(), params.end() };
 }
 
-void NewProjectAudioProcessor::updateSmoothingTargets()
+void ShearAudioProcessor::updateSmoothingTargets()
 {
     inputGainSmoothed.setTargetValue (juce::Decibels::decibelsToGain (parameters.getRawParameterValue ("input")->load()));
     driveSmoothed.setTargetValue (parameters.getRawParameterValue ("drive")->load());
@@ -302,7 +288,7 @@ void NewProjectAudioProcessor::updateSmoothingTargets()
     outputGainSmoothed.setTargetValue (juce::Decibels::decibelsToGain (parameters.getRawParameterValue ("output")->load()));
 }
 
-float NewProjectAudioProcessor::processDistortionSample (float input, DistortionMode mode, float bias) const noexcept
+float ShearAudioProcessor::processDistortionSample (float input, DistortionMode mode, float bias) const noexcept
 {
     const auto centredBias = std::tanh (bias * 2.3f) * 0.38f;
     auto x = juce::jlimit (-8.0f, 8.0f, input);
@@ -339,8 +325,8 @@ float NewProjectAudioProcessor::processDistortionSample (float input, Distortion
 }
 
 //==============================================================================
-// This creates new instances of the plugin..
+// This creates new instances of the plugin.
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new NewProjectAudioProcessor();
+    return new ShearAudioProcessor();
 }
