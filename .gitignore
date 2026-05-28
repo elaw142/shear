@@ -29,6 +29,11 @@ releases/
 *.vst3
 *.dll
 
+# WebView frontend and restored packages
+web-ui/node_modules/
+web-ui/dist/
+Builds/VisualStudio2026/packages/
+
 # OS/editor noise
 Thumbs.db
 .DS_Store

@@ -7,3 +7,4 @@ Builds/VisualStudio2026/*.sln linguist-generated=true
 Builds/VisualStudio2026/*.vcxproj linguist-generated=true
 Builds/VisualStudio2026/*.filters linguist-generated=true
 Builds/VisualStudio2026/resources.rc linguist-generated=true
+web-ui/src/juce/** linguist-vendored=true

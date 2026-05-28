@@ -10,7 +10,7 @@ Shear is a Windows x64 VST3 distortion plugin built with JUCE. It is designed ar
 - Input and output RMS meters.
 - Animated transfer-curve display.
 - Host state save/restore through JUCE's `AudioProcessorValueTreeState`.
-- Modern dark UI with a Shear wordmark and diagonal cut logo.
+- React/WebView editor prototype powered by JUCE's native integration relays.
 
 ## Download
 
@@ -36,6 +36,7 @@ Requirements:
 
 - Windows x64.
 - Visual Studio 2022 with the Desktop development with C++ workload.
+- Node.js 22 or newer for the WebView editor build.
 - JUCE 8.x modules available at the path configured in `Shear.jucer` and the generated Visual Studio project files.
 
 The current generated project expects JUCE modules at:
@@ -47,6 +48,10 @@ D:\Programs\JUCE\modules
 To build the VST3 from PowerShell:
 
 ```powershell
+Push-Location web-ui
+npm install
+npm run build
+Pop-Location
 & 'C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\amd64\MSBuild.exe' 'Builds\VisualStudio2026\Shear.sln' /t:"Shear - VST3" /p:Configuration=Release /p:Platform=x64 /m
 ```
 
@@ -61,7 +66,8 @@ Builds\VisualStudio2026\x64\Release\VST3\Shear.vst3
 ```text
 Source/
   PluginProcessor.*   DSP, parameters, state, meters
-  PluginEditor.*      Custom JUCE UI and controls
+  PluginEditor.*      JUCE WebView host and parameter relays
+web-ui/               React editor served by the JUCE resource provider
 JuceLibraryCode/      Projucer-generated JUCE include wrappers
 Builds/               Generated Visual Studio project files
 Shear.jucer           JUCE project definition

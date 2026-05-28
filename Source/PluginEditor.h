@@ -3,108 +3,60 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-class ShearLookAndFeel : public juce::LookAndFeel_V4
+class ShearWebBrowser final : public juce::WebBrowserComponent
 {
 public:
-    ShearLookAndFeel();
+    using juce::WebBrowserComponent::WebBrowserComponent;
 
-    void drawRotarySlider (juce::Graphics&, int x, int y, int width, int height,
-                           float sliderPosProportional, float rotaryStartAngle,
-                           float rotaryEndAngle, juce::Slider&) override;
-
-    void drawToggleButton (juce::Graphics&, juce::ToggleButton&,
-                           bool shouldDrawButtonAsHighlighted,
-                           bool shouldDrawButtonAsDown) override;
-
-    void drawComboBox (juce::Graphics&, int width, int height, bool isButtonDown,
-                       int buttonX, int buttonY, int buttonW, int buttonH,
-                       juce::ComboBox&) override;
-
-    juce::Font getLabelFont (juce::Label&) override;
-};
-
-class TransferCurveDisplay : public juce::Component
-{
-public:
-    explicit TransferCurveDisplay (ShearAudioProcessor&);
-
-    void paint (juce::Graphics&) override;
-
-private:
-    juce::Colour getModeColour (int mode) const;
-    juce::String getModeName (int mode) const;
-    float shapeSample (float input, int mode, float bias) const noexcept;
-
-    ShearAudioProcessor& audioProcessor;
-};
-
-class LevelMeter : public juce::Component
-{
-public:
-    explicit LevelMeter (juce::String meterName);
-
-    void setLevel (float newLevel);
-    void paint (juce::Graphics&) override;
-
-private:
-    juce::String name;
-    float level = 0.0f;
+    bool pageAboutToLoad (const juce::String& newURL) override;
 };
 
 class ShearAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                        private juce::Timer
+                                   private juce::Timer
 {
 public:
-    ShearAudioProcessorEditor (ShearAudioProcessor&);
+    explicit ShearAudioProcessorEditor (ShearAudioProcessor&);
     ~ShearAudioProcessorEditor() override;
 
-    //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    int getControlParameterIndex (juce::Component&) override;
 
 private:
-    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
-    using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
-    using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
+    using WebResource = juce::WebBrowserComponent::Resource;
 
+    juce::WebBrowserComponent::Options createWebOptions();
+    std::optional<WebResource> getResource (const juce::String& url) const;
     void timerCallback() override;
-    void configureKnob (juce::Slider&, juce::Label&, const juce::String& labelText, bool primary = false);
-    void layoutKnob (juce::Slider&, juce::Label&, juce::Rectangle<int>, bool primary = false);
+
+    static juce::File getWebUiDistDirectory();
+    static const char* getMimeForExtension (const juce::String& extension);
+    static std::vector<std::byte> readFileAsBytes (const juce::File& file);
+
+    juce::RangedAudioParameter& parameter (const juce::String& parameterID) const;
 
     ShearAudioProcessor& audioProcessor;
 
-    ShearLookAndFeel shearLookAndFeel;
-    juce::TooltipWindow tooltipWindow;
+    juce::WebSliderRelay inputRelay { "input" };
+    juce::WebSliderRelay driveRelay { "drive" };
+    juce::WebSliderRelay toneRelay { "tone" };
+    juce::WebSliderRelay biasRelay { "bias" };
+    juce::WebSliderRelay mixRelay { "mix" };
+    juce::WebSliderRelay outputRelay { "output" };
+    juce::WebComboBoxRelay modeRelay { "mode" };
+    juce::WebToggleButtonRelay hqRelay { "hq" };
+    juce::WebControlParameterIndexReceiver controlParameterIndexReceiver;
 
-    juce::Slider inputSlider;
-    juce::Slider driveSlider;
-    juce::Slider toneSlider;
-    juce::Slider biasSlider;
-    juce::Slider mixSlider;
-    juce::Slider outputSlider;
+    ShearWebBrowser webComponent;
 
-    juce::Label inputLabel;
-    juce::Label driveLabel;
-    juce::Label toneLabel;
-    juce::Label biasLabel;
-    juce::Label mixLabel;
-    juce::Label outputLabel;
-
-    juce::ComboBox modeBox;
-    juce::ToggleButton hqButton;
-
-    TransferCurveDisplay curveDisplay { audioProcessor };
-    LevelMeter inputMeter { "IN" };
-    LevelMeter outputMeter { "OUT" };
-
-    std::unique_ptr<SliderAttachment> inputAttachment;
-    std::unique_ptr<SliderAttachment> driveAttachment;
-    std::unique_ptr<SliderAttachment> toneAttachment;
-    std::unique_ptr<SliderAttachment> biasAttachment;
-    std::unique_ptr<SliderAttachment> mixAttachment;
-    std::unique_ptr<SliderAttachment> outputAttachment;
-    std::unique_ptr<ComboBoxAttachment> modeAttachment;
-    std::unique_ptr<ButtonAttachment> hqAttachment;
+    juce::WebSliderParameterAttachment inputAttachment;
+    juce::WebSliderParameterAttachment driveAttachment;
+    juce::WebSliderParameterAttachment toneAttachment;
+    juce::WebSliderParameterAttachment biasAttachment;
+    juce::WebSliderParameterAttachment mixAttachment;
+    juce::WebSliderParameterAttachment outputAttachment;
+    juce::WebComboBoxParameterAttachment modeAttachment;
+    juce::WebToggleButtonParameterAttachment hqAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ShearAudioProcessorEditor)
 };
