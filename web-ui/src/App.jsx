@@ -257,10 +257,16 @@ function TransferCurve({ drive, bias, tone, mix, mode, levels }) {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const bounds = canvas.getBoundingClientRect();
+    const bounds = {
+      width: canvas.clientWidth,
+      height: canvas.clientHeight
+    };
     const ratio = window.devicePixelRatio || 1;
-    canvas.width = Math.round(bounds.width * ratio);
-    canvas.height = Math.round(bounds.height * ratio);
+    const backingWidth = Math.max(1, Math.round(bounds.width * ratio));
+    const backingHeight = Math.max(1, Math.round(bounds.height * ratio));
+
+    if (canvas.width !== backingWidth) canvas.width = backingWidth;
+    if (canvas.height !== backingHeight) canvas.height = backingHeight;
 
     const context = canvas.getContext("2d");
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
@@ -323,7 +329,52 @@ function TransferCurve({ drive, bias, tone, mix, mode, levels }) {
 
 function KnobControl({ slider, emphasis = false }) {
   const angle = `${slider.normalised * 270 - 135}deg`;
-  const step = 1 / Math.max(20, slider.properties.numSteps - 1);
+  const dragState = useRef(null);
+  const valueText = formatValue(slider.id, slider.scaled);
+
+  const finishGesture = (event) => {
+    if (dragState.current === null) return;
+
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    dragState.current = null;
+    slider.endGesture();
+  };
+
+  const updateFromPointer = (event) => {
+    if (dragState.current === null) return;
+
+    event.preventDefault();
+
+    const { startX, startY, startValue } = dragState.current;
+    const dragDelta = (startY - event.clientY) + ((event.clientX - startX) * 0.35);
+    const sensitivity = event.shiftKey ? 520 : 220;
+
+    slider.setNormalised(startValue + (dragDelta / sensitivity));
+  };
+
+  const handleKeyDown = (event) => {
+    const coarseStep = 0.02;
+    const fineStep = 0.005;
+    const pageStep = 0.1;
+    const step = event.shiftKey ? fineStep : coarseStep;
+    let nextValue = slider.normalised;
+
+    if (event.key === "ArrowUp" || event.key === "ArrowRight") nextValue += step;
+    else if (event.key === "ArrowDown" || event.key === "ArrowLeft") nextValue -= step;
+    else if (event.key === "PageUp") nextValue += pageStep;
+    else if (event.key === "PageDown") nextValue -= pageStep;
+    else if (event.key === "Home") nextValue = 0;
+    else if (event.key === "End") nextValue = 1;
+    else return;
+
+    event.preventDefault();
+    slider.beginGesture();
+    slider.setNormalised(nextValue);
+    slider.endGesture();
+  };
 
   return (
     <section
@@ -333,26 +384,36 @@ function KnobControl({ slider, emphasis = false }) {
     >
       <div className="knob-topline">
         <span>{slider.properties.name}</span>
-        <strong>{formatValue(slider.id, slider.scaled)}</strong>
+        <strong>{valueText}</strong>
       </div>
       <div className="knob-shell">
         <div className="knob">
           <div className="knob-pointer" />
           <div className="knob-core" />
         </div>
-        <input
-          className="knob-range"
-          type="range"
+        <div
+          className="knob-hit-area"
+          role="slider"
+          tabIndex="0"
           aria-label={slider.properties.name}
-          min="0"
-          max="1"
-          step={step}
-          value={slider.normalised}
-          onPointerDown={slider.beginGesture}
-          onPointerUp={slider.endGesture}
-          onPointerCancel={slider.endGesture}
-          onBlur={slider.endGesture}
-          onChange={(event) => slider.setNormalised(Number(event.target.value))}
+          aria-valuemin={slider.properties.start}
+          aria-valuemax={slider.properties.end}
+          aria-valuenow={Number(slider.scaled.toFixed(2))}
+          aria-valuetext={valueText}
+          onPointerDown={(event) => {
+            event.preventDefault();
+            event.currentTarget.setPointerCapture(event.pointerId);
+            dragState.current = {
+              startX: event.clientX,
+              startY: event.clientY,
+              startValue: slider.normalised
+            };
+            slider.beginGesture();
+          }}
+          onPointerMove={updateFromPointer}
+          onPointerUp={finishGesture}
+          onPointerCancel={finishGesture}
+          onKeyDown={handleKeyDown}
         />
       </div>
       <div className="knob-scale" aria-hidden="true">
